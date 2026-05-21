@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Гид по Хабаровску</string>
+    <string name="about_text">Панченко Владимир Юрьевич\nМО911ИВС\n\nПриложение-гид по достопримечательностям Хабаровска.</string>
+    <string name="place_of_day">Место дня</string>
+    <string name="widget_place">Набережная Амура</string>
+</resources>

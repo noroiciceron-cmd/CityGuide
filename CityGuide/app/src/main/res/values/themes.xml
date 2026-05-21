@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.CityGuide" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/city_primary</item>
+        <item name="colorPrimaryDark">@color/city_primary_dark</item>
+        <item name="colorAccent">@color/city_accent</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style name="CityButton">
+        <item name="android:backgroundTint">@color/city_primary</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:minHeight">44dp</item>
+    </style>
+
+    <style name="CityOutlineButton">
+        <item name="android:backgroundTint">@color/city_surface</item>
+        <item name="android:textColor">@color/city_primary</item>
+        <item name="android:minHeight">44dp</item>
+    </style>
+</resources>
