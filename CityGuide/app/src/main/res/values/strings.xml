@@ -3,4 +3,15 @@
     <string name="about_text">Панченко Владимир Юрьевич\nМО911ИВС\n\nПриложение-гид по достопримечательностям Хабаровска.</string>
     <string name="place_of_day">Место дня</string>
     <string name="widget_place">Набережная Амура</string>
+    <string name="settings_title">Настройки</string>
+    <string name="video_autoplay_label">Автоматически запускать видео</string>
+    <string name="save_settings_button">Сохранить настройки</string>
+    <string name="settings_saved">Настройки сохранены.</string>
+    <string name="video_autoplay_enabled">включён</string>
+    <string name="video_autoplay_disabled">выключен</string>
+    <string name="video_autoplay_status">Автозапуск видео: %1$s</string>
+
+    <string name="video_file_not_found_title">Видеофайл не найден</string>
+    <string name="video_file_not_found_message">Добавьте файл app/src/main/res/raw/city_video.mp4 и запустите приложение заново.</string>
+    <string name="ok">OK</string>
 </resources>

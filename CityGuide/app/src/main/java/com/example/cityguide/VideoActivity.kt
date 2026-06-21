@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 
 class VideoActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video)
@@ -18,21 +19,51 @@ class VideoActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val videoResId = resources.getIdentifier("city_video", "raw", packageName)
+        val videoResId = resources.getIdentifier(
+            "city_video",
+            "raw",
+            packageName
+        )
+
         if (videoResId == 0) {
             AlertDialog.Builder(this)
-                .setTitle("Видеофайл не найден")
-                .setMessage("Добавьте файл app/src/main/res/raw/city_video.mp4 и запустите приложение заново.")
-                .setPositiveButton("OK") { _, _ -> finish() }
+                .setTitle(getString(R.string.video_file_not_found_title))
+                .setMessage(getString(R.string.video_file_not_found_message))
+                .setPositiveButton(getString(R.string.ok)) { _, _ -> finish() }
                 .show()
             return
         }
 
         val videoView: VideoView = findViewById(R.id.videoView)
-        videoView.setVideoURI(Uri.parse("android.resource://$packageName/$videoResId"))
-        videoView.setMediaController(MediaController(this))
+
+        val mediaController = MediaController(this)
+        mediaController.setAnchorView(videoView)
+        videoView.setMediaController(mediaController)
+
+        val prefs = getSharedPreferences(
+            SettingsActivity.PREFS_NAME,
+            MODE_PRIVATE
+        )
+
+        val autoplayEnabled = prefs.getBoolean(
+            SettingsActivity.KEY_VIDEO_AUTOPLAY,
+            true
+        )
+
+        videoView.setOnPreparedListener {
+            if (autoplayEnabled) {
+                videoView.start()
+            } else {
+                videoView.pause()
+                videoView.seekTo(1)
+            }
+        }
+
+        videoView.setVideoURI(
+            Uri.parse("android.resource://$packageName/$videoResId")
+        )
+
         videoView.requestFocus()
-        videoView.start()
     }
 
     override fun onSupportNavigateUp(): Boolean {
