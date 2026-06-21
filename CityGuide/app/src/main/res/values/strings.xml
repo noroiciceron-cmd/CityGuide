@@ -17,4 +17,11 @@
 
     <string name="search_hint">Название или категория</string>
     <string name="note_hint">Текст заметки</string>
+
+    <string name="photo_previous">← Предыдущее</string>
+    <string name="photo_next">Следующее →</string>
+    <string name="photo_counter">Фото %1$d из %2$d</string>
+    <string name="photo_counter_empty">Фото 0 из 0</string>
+    <string name="photo_saved">Фото сохранено.</string>
+    <string name="photo_error">Не удалось получить фото.</string>
 </resources>

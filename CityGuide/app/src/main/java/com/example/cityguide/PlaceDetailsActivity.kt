@@ -44,6 +44,9 @@ class PlaceDetailsActivity : AppCompatActivity() {
 
     private var currentPhotoUri: Uri? = null
 
+    private var placePhotos: List<PlacePhoto> = emptyList()
+    private var currentPhotoIndex: Int = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_place_details)
@@ -62,10 +65,13 @@ class PlaceDetailsActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.placeCategoryTextView).text = place.category
         findViewById<TextView>(R.id.placeDescriptionTextView).text = place.description
         findViewById<ImageView>(R.id.placeImageView).setImageResource(place.imageResId)
+
         noteEditText = findViewById(R.id.noteEditText)
         favoriteButton = findViewById(R.id.favoriteButton)
         emptyNotesTextView = findViewById(R.id.emptyNotesTextView)
+
         noteAdapter = NoteAdapter(emptyList()) { note -> selectNote(note) }
+
         findViewById<RecyclerView>(R.id.notesRecyclerView).apply {
             layoutManager = LinearLayoutManager(this@PlaceDetailsActivity)
             adapter = noteAdapter
@@ -73,17 +79,21 @@ class PlaceDetailsActivity : AppCompatActivity() {
         }
 
         loadSavedState()
+        setupPhotoNavigation()
 
         findViewById<Button>(R.id.createNoteButton).setOnClickListener { createNote() }
         findViewById<Button>(R.id.updateNoteButton).setOnClickListener { updateNote() }
         findViewById<Button>(R.id.deleteNoteButton).setOnClickListener { deleteNote() }
         favoriteButton.setOnClickListener { toggleFavorite() }
         findViewById<Button>(R.id.audioButton).setOnClickListener { playAudioGuide() }
+
         findViewById<Button>(R.id.videoButton).setOnClickListener {
             startActivity(Intent(this, VideoActivity::class.java))
         }
+
         findViewById<Button>(R.id.cameraButton).setOnClickListener { openCamera() }
         findViewById<Button>(R.id.notifyButton).setOnClickListener { showPlaceNotification() }
+
         findViewById<Button>(R.id.mapButton).setOnClickListener {
             startActivity(
                 Intent(this, MapActivity::class.java)
@@ -105,12 +115,11 @@ class PlaceDetailsActivity : AppCompatActivity() {
             val photoUri = currentPhotoUri
 
             if (photoUri != null) {
-                val cameraImageView: ImageView = findViewById(R.id.cameraImageView)
-                cameraImageView.setImageURI(null)
-                cameraImageView.setImageURI(photoUri)
-                showMessage("Фото сделано.")
+                dbHelper.addPhoto(place, photoUri.toString())
+                reloadPhotos(showLatest = true)
+                showMessage(getString(R.string.photo_saved))
             } else {
-                showMessage("Не удалось получить фото.")
+                showMessage(getString(R.string.photo_error))
             }
         }
     }
@@ -302,6 +311,100 @@ class PlaceDetailsActivity : AppCompatActivity() {
 
     private fun showMessage(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setupPhotoNavigation() {
+        findViewById<Button>(R.id.photoPreviousButton).setOnClickListener {
+            showPreviousPhoto()
+        }
+
+        findViewById<Button>(R.id.photoNextButton).setOnClickListener {
+            showNextPhoto()
+        }
+
+        reloadPhotos(showLatest = true)
+    }
+
+    private fun reloadPhotos(showLatest: Boolean = false) {
+        placePhotos = dbHelper.getPhotos(place)
+
+        if (placePhotos.isEmpty()) {
+            currentPhotoIndex = -1
+            updatePhotoControls()
+            return
+        }
+
+        currentPhotoIndex = if (showLatest) {
+            placePhotos.lastIndex
+        } else {
+            currentPhotoIndex.coerceIn(0, placePhotos.lastIndex)
+        }
+
+        showCurrentPhoto()
+    }
+
+    private fun showCurrentPhoto() {
+        if (currentPhotoIndex !in placePhotos.indices) {
+            updatePhotoControls()
+            return
+        }
+
+        val photo = placePhotos[currentPhotoIndex]
+        val cameraImageView: ImageView = findViewById(R.id.cameraImageView)
+
+        cameraImageView.setImageURI(null)
+        cameraImageView.setImageURI(Uri.parse(photo.photoUri))
+
+        updatePhotoControls()
+    }
+
+    private fun showPreviousPhoto() {
+        if (placePhotos.isEmpty()) {
+            return
+        }
+
+        currentPhotoIndex = if (currentPhotoIndex <= 0) {
+            placePhotos.lastIndex
+        } else {
+            currentPhotoIndex - 1
+        }
+
+        showCurrentPhoto()
+    }
+
+    private fun showNextPhoto() {
+        if (placePhotos.isEmpty()) {
+            return
+        }
+
+        currentPhotoIndex = if (currentPhotoIndex >= placePhotos.lastIndex) {
+            0
+        } else {
+            currentPhotoIndex + 1
+        }
+
+        showCurrentPhoto()
+    }
+
+    private fun updatePhotoControls() {
+        val previousButton: Button = findViewById(R.id.photoPreviousButton)
+        val nextButton: Button = findViewById(R.id.photoNextButton)
+        val counterTextView: TextView = findViewById(R.id.photoCounterTextView)
+
+        val hasPhotos = placePhotos.isNotEmpty()
+
+        previousButton.isEnabled = hasPhotos && placePhotos.size > 1
+        nextButton.isEnabled = hasPhotos && placePhotos.size > 1
+
+        counterTextView.text = if (hasPhotos && currentPhotoIndex in placePhotos.indices) {
+            getString(
+                R.string.photo_counter,
+                currentPhotoIndex + 1,
+                placePhotos.size
+            )
+        } else {
+            getString(R.string.photo_counter_empty)
+        }
     }
 
     companion object {

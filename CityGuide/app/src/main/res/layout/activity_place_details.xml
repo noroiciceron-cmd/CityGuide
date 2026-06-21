@@ -170,6 +170,41 @@
                 android:contentDescription="Фото пользователя"
                 android:scaleType="centerCrop" />
 
+            <LinearLayout
+                android:id="@+id/photoNavigationLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/photoPreviousButton"
+                    style="@style/CityButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/photo_previous" />
+
+                <TextView
+                    android:id="@+id/photoCounterTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:text="@string/photo_counter_empty"
+                    android:textColor="@color/city_text_secondary"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/photoNextButton"
+                    style="@style/CityButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/photo_next" />
+
+            </LinearLayout>
+
             <Button
                 android:id="@+id/notifyButton"
                 style="@style/CityOutlineButton"

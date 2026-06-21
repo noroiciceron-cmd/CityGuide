@@ -18,6 +18,12 @@ data class PlaceNote(
     val updatedAt: Long
 )
 
+data class PlacePhoto(
+    val id: Long,
+    val placeId: String,
+    val photoUri: String,
+    val createdAt: Long
+)
 class SavedPlaceDbHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -34,12 +40,16 @@ class SavedPlaceDbHelper(context: Context) :
             """.trimIndent()
         )
         createNotesTable(db)
+        createPhotosTable(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion < 2) {
             createNotesTable(db)
             copyLegacyNotes(db)
+        }
+        if (oldVersion < 3) {
+            createPhotosTable(db)
         }
     }
 
@@ -149,6 +159,56 @@ class SavedPlaceDbHelper(context: Context) :
         writableDatabase.delete(TABLE_NOTES, "id = ?", arrayOf(noteId.toString()))
     }
 
+
+    fun addPhoto(place: Place, photoUri: String): Long {
+        val values = ContentValues().apply {
+            put("place_id", place.id)
+            put("photo_uri", photoUri)
+            put("created_at", System.currentTimeMillis())
+        }
+
+        return writableDatabase.insert(
+            TABLE_PHOTOS,
+            null,
+            values
+        )
+    }
+
+    fun getPhotos(place: Place): List<PlacePhoto> {
+        val result = mutableListOf<PlacePhoto>()
+
+        readableDatabase.query(
+            TABLE_PHOTOS,
+            arrayOf("id", "place_id", "photo_uri", "created_at"),
+            "place_id = ?",
+            arrayOf(place.id),
+            null,
+            null,
+            "created_at ASC"
+        ).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(
+                    PlacePhoto(
+                        id = cursor.getLong(
+                            cursor.getColumnIndexOrThrow("id")
+                        ),
+                        placeId = cursor.getString(
+                            cursor.getColumnIndexOrThrow("place_id")
+                        ),
+                        photoUri = cursor.getString(
+                            cursor.getColumnIndexOrThrow("photo_uri")
+                        ),
+                        createdAt = cursor.getLong(
+                            cursor.getColumnIndexOrThrow("created_at")
+                        )
+                    )
+                )
+            }
+        }
+
+        return result
+    }
+
     private fun createNotesTable(db: SQLiteDatabase) {
         db.execSQL(
             """
@@ -159,6 +219,20 @@ class SavedPlaceDbHelper(context: Context) :
                 updated_at INTEGER NOT NULL
             )
             """.trimIndent()
+        )
+    }
+
+
+    private fun createPhotosTable(db: SQLiteDatabase) {
+        db.execSQL(
+            """
+        CREATE TABLE IF NOT EXISTS $TABLE_PHOTOS (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            place_id TEXT NOT NULL,
+            photo_uri TEXT NOT NULL,
+            created_at INTEGER NOT NULL
+        )
+        """.trimIndent()
         )
     }
 
@@ -182,8 +256,10 @@ class SavedPlaceDbHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "city_guide.db"
-        private const val DATABASE_VERSION = 2
+        private const val DATABASE_VERSION = 3
         private const val TABLE_SAVED_PLACES = "saved_places"
         private const val TABLE_NOTES = "place_notes"
+
+        private const val TABLE_PHOTOS = "place_photos"
     }
 }
