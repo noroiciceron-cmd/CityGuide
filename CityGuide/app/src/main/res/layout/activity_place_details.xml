@@ -28,7 +28,7 @@
                 android:id="@+id/placeImageView"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
-                android:background="@drawable/place_placeholder"
+                android:layout_marginBottom="16dp"
                 android:contentDescription="Изображение места"
                 android:scaleType="centerCrop" />
 
@@ -83,7 +83,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Создать" />
+                    android:minWidth="0dp"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="@string/note_create" />
 
                 <Button
                     android:id="@+id/updateNoteButton"
@@ -92,7 +99,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:text="Изменить" />
+                    android:minWidth="0dp"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="@string/note_update" />
 
                 <Button
                     android:id="@+id/deleteNoteButton"
@@ -101,7 +115,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:text="Удалить" />
+                    android:minWidth="0dp"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="@string/note_delete" />
             </LinearLayout>
 
             <TextView
@@ -164,11 +185,14 @@
             <ImageView
                 android:id="@+id/cameraImageView"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/card_background"
-                android:contentDescription="Фото пользователя"
-                android:scaleType="centerCrop" />
+                android:layout_height="260dp"
+                android:layout_marginTop="12dp"
+                android:adjustViewBounds="true"
+                android:background="@color/city_surface"
+                android:clickable="true"
+                android:contentDescription="@string/open_photo"
+                android:focusable="true"
+                android:scaleType="fitCenter" />
 
             <LinearLayout
                 android:id="@+id/photoNavigationLayout"
@@ -184,6 +208,13 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:minWidth="0dp"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
                     android:text="@string/photo_previous" />
 
                 <TextView
@@ -201,6 +232,13 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:minWidth="0dp"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
                     android:text="@string/photo_next" />
 
             </LinearLayout>

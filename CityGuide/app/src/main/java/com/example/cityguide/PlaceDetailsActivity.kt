@@ -322,6 +322,10 @@ class PlaceDetailsActivity : AppCompatActivity() {
             showNextPhoto()
         }
 
+        findViewById<ImageView>(R.id.cameraImageView).setOnClickListener {
+            openCurrentPhoto()
+        }
+
         reloadPhotos(showLatest = true)
     }
 
@@ -356,6 +360,35 @@ class PlaceDetailsActivity : AppCompatActivity() {
         cameraImageView.setImageURI(Uri.parse(photo.photoUri))
 
         updatePhotoControls()
+    }
+
+    private fun openCurrentPhoto() {
+        if (currentPhotoIndex !in placePhotos.indices) {
+            showMessage(getString(R.string.photo_open_error))
+            return
+        }
+
+        val photoUri = Uri.parse(placePhotos[currentPhotoIndex].photoUri)
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(photoUri, "image/*")
+            clipData = ClipData.newRawUri(
+                getString(R.string.open_photo),
+                photoUri
+            )
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        try {
+            startActivity(
+                Intent.createChooser(
+                    intent,
+                    getString(R.string.open_photo)
+                )
+            )
+        } catch (error: Exception) {
+            showMessage(getString(R.string.photo_open_error))
+        }
     }
 
     private fun showPreviousPhoto() {
