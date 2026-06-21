@@ -6,7 +6,11 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.content.ClipData
+import android.net.Uri
+import android.os.Environment
+import androidx.core.content.FileProvider
+import java.io.File
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
@@ -37,6 +41,8 @@ class PlaceDetailsActivity : AppCompatActivity() {
     private lateinit var emptyNotesTextView: TextView
     private var mediaPlayer: MediaPlayer? = null
     private var selectedNoteId: Long? = null
+
+    private var currentPhotoUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,12 +100,17 @@ class PlaceDetailsActivity : AppCompatActivity() {
     @Deprecated("Used to match the lab camera intent example.")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
-            val bitmap = data?.extras?.get("data") as? Bitmap
-            if (bitmap != null) {
-                findViewById<ImageView>(R.id.cameraImageView).setImageBitmap(bitmap)
+            val photoUri = currentPhotoUri
+
+            if (photoUri != null) {
+                val cameraImageView: ImageView = findViewById(R.id.cameraImageView)
+                cameraImageView.setImageURI(null)
+                cameraImageView.setImageURI(photoUri)
+                showMessage("Фото сделано.")
             } else {
-                showMessage("Камера не вернула изображение.")
+                showMessage("Не удалось получить фото.")
             }
         }
     }
@@ -211,12 +222,45 @@ class PlaceDetailsActivity : AppCompatActivity() {
     }
 
     private fun openCamera() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val photoUri = createPhotoUri()
+        currentPhotoUri = photoUri
+
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+            putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+            clipData = ClipData.newRawUri("photo", photoUri)
+            addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
         try {
             startActivityForResult(intent, REQUEST_CAMERA)
         } catch (error: Exception) {
+            currentPhotoUri = null
             showMessage("Камера недоступна.")
         }
+    }
+
+    private fun createPhotoUri(): Uri {
+        val photosDir = File(
+            getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+            "city_guide_photos"
+        )
+
+        if (!photosDir.exists()) {
+            photosDir.mkdirs()
+        }
+
+        val photoFile = File.createTempFile(
+            "photo_${place.id}_",
+            ".jpg",
+            photosDir
+        )
+
+        return FileProvider.getUriForFile(
+            this,
+            "$packageName.fileprovider",
+            photoFile
+        )
     }
 
     private fun showPlaceNotification() {
