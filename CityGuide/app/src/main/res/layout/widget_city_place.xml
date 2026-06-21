@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widgetRootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/widget_background"
@@ -32,4 +33,5 @@
         android:contentDescription="@string/widget_place"
         android:scaleType="centerCrop"
         android:src="@drawable/place_amur_embankment" />
+
 </LinearLayout>
