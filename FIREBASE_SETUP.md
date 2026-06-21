@@ -1,12 +1,25 @@
 # Настройка Firebase Realtime Database
 
-Этот файл описывает, как студенту настроить Firebase для приложения **«Гид по Хабаровску»** в своём аккаунте.
+Этот файл описывает настройку Firebase для Android-приложения **«Гид по Хабаровску»**.
+
+В приложении используется **Firebase Realtime Database** для экрана **«Облако»**. Экран читает облачную рекомендацию из базы данных по пути:
+
+```text
+/recommendation/title
+/recommendation/text
+```
+
+Приложение не записывает данные в Firebase. Значения `title` и `text` редактируются вручную через **Firebase Console**.
+
+---
 
 ## 1. Создать проект Firebase
 
 1. Откройте Firebase Console:
 
-   <https://console.firebase.google.com>
+   ```text
+   https://console.firebase.google.com
+   ```
 
 2. Нажмите **Create a project** или **Add project**.
 
@@ -16,13 +29,15 @@
    CityGuide
    ```
 
-4. Google Analytics можно отключить. Для Realtime Database он не нужен.
+4. Google Analytics для этой лабораторной работы можно отключить.
 
 5. Дождитесь создания проекта.
 
+---
+
 ## 2. Добавить Android-приложение
 
-1. На главной странице проекта Firebase нажмите значок Android.
+1. На главной странице Firebase-проекта нажмите значок Android.
 
 2. В поле **Android package name** укажите:
 
@@ -40,7 +55,9 @@
 
 5. Нажмите **Register app**.
 
-## 3. Скачать google-services.json
+---
+
+## 3. Скачать и добавить `google-services.json`
 
 После регистрации Android-приложения Firebase предложит скачать файл:
 
@@ -48,25 +65,35 @@
 google-services.json
 ```
 
-Его нужно положить в папку:
+Его нужно положить в папку Android-модуля `app`.
+
+Если Android Studio открыт из внутренней папки проекта, путь будет таким:
+
+```text
+app/google-services.json
+```
+
+Если открыт весь репозиторий GitHub, путь будет таким:
 
 ```text
 CityGuide/app/google-services.json
 ```
 
-Полный путь в этом проекте:
+После добавления файла нажмите **Sync Now** в Android Studio или пересоберите проект.
 
-```text
-/Users/aleksandr/src/AndroidLabs/CityGuide/app/google-services.json
-```
-
-После добавления файла нужно синхронизировать Gradle в Android Studio или заново собрать проект.
+---
 
 ## 4. Проверить Gradle-настройки
 
-В проекте уже добавлена зависимость Firebase Realtime Database.
+В проекте уже предусмотрено подключение Firebase Gradle Plugin только при наличии файла `google-services.json`.
 
-В `app/build.gradle.kts` есть логика:
+В файле:
+
+```text
+CityGuide/app/build.gradle.kts
+```
+
+используется логика:
 
 ```kotlin
 if (file("google-services.json").exists()) {
@@ -74,15 +101,15 @@ if (file("google-services.json").exists()) {
 }
 ```
 
-Это значит, что Firebase Gradle plugin применяется только после добавления файла `google-services.json`.
-
-Также в зависимостях уже есть Firebase Database:
+Также в зависимостях проекта должна быть библиотека Realtime Database:
 
 ```kotlin
 implementation(libs.firebase.database)
 ```
 
 Обычно ничего дополнительно копировать из Firebase Console в Gradle не нужно.
+
+---
 
 ## 5. Создать Realtime Database
 
@@ -94,17 +121,19 @@ implementation(libs.firebase.database)
    Build -> Realtime Database
    ```
 
-3. Если база ещё не создана, нажмите **Create Database**.
+3. Нажмите **Create Database**.
 
-4. Выберите регион.
+4. Выберите регион базы данных.
 
-5. Для лабораторной работы можно выбрать **Start in test mode**.
+5. Для первичной проверки можно выбрать **Start in test mode**.
 
-После создания базы должна открыться вкладка **Data**.
+После создания базы откроется вкладка **Data**.
+
+---
 
 ## 6. Добавить данные рекомендации
 
-В Realtime Database нужно создать структуру:
+В корне Realtime Database нужно создать объект:
 
 ```json
 {
@@ -115,59 +144,69 @@ implementation(libs.firebase.database)
 }
 ```
 
-То есть в корне базы должен быть объект:
+Итоговая структура базы должна быть такой:
 
 ```text
 recommendation
+├── title: "Набережная Амура"
+└── text: "Сегодня стоит прогуляться по набережной Амура."
 ```
 
-Внутри него два поля:
-
-```text
-title
-text
-```
-
-Приложение читает именно этот путь:
+Приложение читает именно эти поля:
 
 ```text
 /recommendation/title
 /recommendation/text
 ```
 
+### Как добавить данные через Firebase Console
+
+1. Откройте **Realtime Database -> Data**.
+2. Нажмите на три точки в правой части панели данных.
+3. Выберите **Import JSON**.
+4. Импортируйте JSON-файл со структурой выше.
+
+Можно также создать узел `recommendation` вручную и добавить в него два поля: `title` и `text`.
+
+---
+
 ## 7. Проверить URL базы
 
-В этом проекте `CloudActivity` использует явный URL базы:
+В `CloudActivity.kt` используется явный URL Realtime Database.
+
+Файл:
+
+```text
+CityGuide/app/src/main/java/com/example/cityguide/CloudActivity.kt
+```
+
+Внизу файла находится константа:
 
 ```kotlin
-https://cityguide-76e7e-default-rtdb.europe-west1.firebasedatabase.app
+private const val DATABASE_URL = "https://your-project-id-default-rtdb.firebaseio.com"
 ```
 
-Если студент создаёт Firebase-проект в своём аккаунте, URL будет другим. Его нужно посмотреть вверху вкладки **Realtime Database -> Data**.
-
-Пример URL:
+URL нужно взять в Firebase Console во вкладке:
 
 ```text
-https://your-project-id-default-rtdb.europe-west1.firebasedatabase.app
+Realtime Database -> Data
 ```
 
-Затем нужно заменить константу `DATABASE_URL` в файле:
-
-```text
-app/src/main/java/com/example/cityguide/CloudActivity.kt
-```
+Он отображается сверху над деревом данных.
 
 Пример:
 
-```kotlin
-private const val DATABASE_URL = "https://your-project-id-default-rtdb.europe-west1.firebasedatabase.app"
+```text
+https://cityguide-xxxxx-default-rtdb.firebaseio.com
 ```
+
+Если URL в `CloudActivity.kt` не совпадает с URL вашей базы, приложение будет обращаться не к той базе.
+
+---
 
 ## 8. Настроить правила доступа
 
-Для учебного проекта можно временно открыть чтение и запись.
-
-Во вкладке **Rules** можно указать:
+Для быстрой проверки Firebase можно временно использовать тестовые правила:
 
 ```json
 {
@@ -178,19 +217,41 @@ private const val DATABASE_URL = "https://your-project-id-default-rtdb.europe-we
 }
 ```
 
-Затем нажмите **Publish**.
+Но оставлять такие правила не рекомендуется, потому что любой человек, знающий URL базы, сможет читать, изменять и удалять данные.
 
-Важно: такие правила подходят только для лабораторной работы. Для настоящего приложения они небезопасны.
+После проверки лучше использовать более безопасный вариант:
+
+```json
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "recommendation": {
+      ".read": true,
+      ".write": false
+    }
+  }
+}
+```
+
+Эти правила означают:
+
+- вся база по умолчанию закрыта;
+- приложение может читать только `/recommendation`;
+- приложение не может записывать данные;
+- `title` и `text` можно по-прежнему менять вручную через Firebase Console.
+
+После изменения правил нажмите **Publish**.
+
+---
 
 ## 9. Проверить работу в приложении
 
-1. Убедитесь, что эмулятор или устройство подключены к интернету.
-
+1. Убедитесь, что устройство или эмулятор подключены к интернету.
 2. Запустите приложение.
-
 3. На главном экране откройте меню с тремя точками.
-
-4. Выберите **Облако**.
+4. Выберите пункт **Облако**.
 
 Если всё настроено правильно, приложение покажет:
 
@@ -199,13 +260,29 @@ private const val DATABASE_URL = "https://your-project-id-default-rtdb.europe-we
 Сегодня стоит прогуляться по набережной Амура.
 ```
 
-Если отображается ошибка, проверьте:
+Если изменить `title` или `text` в Firebase Console, приложение получит новые данные при повторном открытии экрана **«Облако»** или при нажатии кнопки обновления.
 
-- файл `google-services.json` лежит в `CityGuide/app/`;
+---
+
+## 10. Что проверить при ошибке
+
+Если экран **«Облако»** показывает сообщение об ошибке, проверьте:
+
+- файл `google-services.json` лежит в папке `app`;
 - package name в Firebase равен `com.example.cityguide`;
 - Realtime Database создана;
 - данные лежат по пути `/recommendation`;
-- правила Firebase разрешают чтение;
-- URL в `CloudActivity.kt` совпадает с URL вашей базы;
-- на эмуляторе работает интернет.
+- внутри `recommendation` есть поля `title` и `text`;
+- правила Firebase разрешают чтение `/recommendation`;
+- URL в `CloudActivity.kt` совпадает с URL базы;
+- на устройстве или эмуляторе работает интернет.
 
+---
+
+## 11. VPN и Firebase
+
+Firebase работает через интернет и не требует, чтобы устройства находились в одной Wi-Fi сети.
+
+Если одно устройство подключено через VPN, а другое без VPN, это нормально. Главное, чтобы VPN не блокировал доступ к сервисам Google/Firebase.
+
+Если без VPN экран **«Облако»** работает, а с VPN не работает, причина обычно в VPN, DNS-фильтрации или блокировке доменов Firebase.
