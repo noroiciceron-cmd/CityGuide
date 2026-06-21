@@ -63,9 +63,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Текст заметки"
+                android:backgroundTint="@color/city_primary"
+                android:hint="@string/note_hint"
+                android:importantForAutofill="no"
                 android:inputType="textMultiLine"
-                android:minLines="2" />
+                android:minLines="2"
+                android:textColor="@color/black"
+                android:textColorHint="@color/city_text_secondary" />
 
             <LinearLayout
                 android:layout_width="match_parent"

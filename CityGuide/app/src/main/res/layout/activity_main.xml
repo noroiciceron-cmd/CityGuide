@@ -39,9 +39,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Название или категория"
+                android:backgroundTint="@color/city_primary"
+                android:hint="@string/search_hint"
+                android:importantForAutofill="no"
                 android:inputType="text"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textColor="@color/black"
+                android:textColorHint="@color/city_text_secondary" />
 
             <Button
                 android:id="@+id/searchButton"
