@@ -14,4 +14,7 @@
     <string name="video_file_not_found_title">Видеофайл не найден</string>
     <string name="video_file_not_found_message">Добавьте файл app/src/main/res/raw/city_video.mp4 и запустите приложение заново.</string>
     <string name="ok">OK</string>
+
+    <string name="search_hint">Название или категория</string>
+    <string name="note_hint">Текст заметки</string>
 </resources>
