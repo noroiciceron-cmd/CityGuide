@@ -71,6 +71,6 @@ class CloudActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val DATABASE_URL = "https://cityguide-76e7e-default-rtdb.europe-west1.firebasedatabase.app"
+        private const val DATABASE_URL = "https://cityguide-9xxx2-default-rtdb.firebaseio.com"
     }
 }
